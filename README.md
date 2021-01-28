@@ -1,3 +1,4 @@
+![Go](https://github.com/dbsystel/kewl/workflows/Go/badge.svg)
 # KEWL - K8s Easy Webhook Library
 
 ## Description
