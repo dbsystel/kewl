@@ -105,13 +105,13 @@ webhook_handler_mutation_sum{admission_review_version="v1",group="",kind="Pod",r
 webhook_handler_mutation_count{admission_review_version="v1",group="",kind="Pod",result="mutated",target_namespace="test",version="v1"} 1
 ```
 
-# License
+## License
 
 This project is licensed under Apache License v2.0, which is [included in the repository](./LICENSE.txt).
 
-# Contributions
+## Contributions
 
 Contributions are very welcome, please refer to the [Contribution guide](./CONTRIBUTING.md)
 
-# Code of conduct
+## Code of conduct
 Our code of conduct can be found [here](./CODE_OF_CONDUCT.md).
