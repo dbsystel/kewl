@@ -22,14 +22,14 @@ jobs:
       run: go mod download
 
     - name: Run golangci-lint
-      uses: golangci/golangci-lint-action@v1.2.1
+      uses: golangci/golangci-lint-action@v2
       with:
         version: v1.36
         args: run ./pkg/...
         only-new-issues: true
         
     - name: Build
-      run: go build -v ./...
+      run: go build -v ./pkg/...
 
     - name: Install go-acc
       run: go get github.com/ory/go-acc
