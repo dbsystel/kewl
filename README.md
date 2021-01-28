@@ -114,4 +114,4 @@ This project is licensed under Apache License v2.0, which is [included in the re
 Contributions are very welcome, please refer to the [Contribution guide](./CONTRIBUTING.md)
 
 # Code of conduct
-Our code of conduct can be found [here](./CODE_OF_CONDUCT.md)
+Our code of conduct can be found [here](./CODE_OF_CONDUCT.md).
