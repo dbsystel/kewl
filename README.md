@@ -1,4 +1,4 @@
-![Go](https://github.com/dbsystel/kewl/workflows/Go/badge.svg) [![codecov](https://codecov.io/gh/dbsystel/kewl/branch/master/graph/badge.svg?token=E123SJUGFD)](https://codecov.io/gh/dbsystel/kewl)
+![Go](https://github.com/dbsystel/kewl/workflows/Go/badge.svg) [![codecov](https://codecov.io/gh/dbsystel/kewl/branch/master/graph/badge.svg?token=E123SJUGFD)](https://codecov.io/gh/dbsystel/kewl) [![Go Reference](https://pkg.go.dev/badge/github.com/dbsystel/kewl/.svg)](https://pkg.go.dev/github.com/dbsystel/kewl/)
 # KEWL - K8s Easy Webhook Library
 
 ## Description
