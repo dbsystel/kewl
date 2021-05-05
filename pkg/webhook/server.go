@@ -100,7 +100,7 @@ func (s *Server) readAdmissionReview(writer httpext.ResponseWriter, request *htt
 	return review
 }
 
-// facadeAdmissionReviewFrom reads a facade.AdmissionReview from the request, will propagate errors and return nil, if body is empty
+// facadeAdmissionReviewFrom reads a facade.AdmissionReview from the request, will return nil, if body is empty
 func (s *Server) facadeAdmissionReviewFrom(request *httpext.Request) (facade.AdmissionReview, error) {
 	// Try to get a facade.AdmissionReview from the request
 	body, err := request.ReadBody()
@@ -113,8 +113,8 @@ func (s *Server) facadeAdmissionReviewFrom(request *httpext.Request) (facade.Adm
 	return facade.AdmissionReviewFrom(body)
 }
 
-// startMetering starts the metering for the facade.AdmissionReview and httpext.ResponseWriter using the metering.Summary
-func (s *Server) startMetering(tgt metering.Summary, review facade.AdmissionReview, writer httpext.ResponseWriter) func() {
+// startMetering starts the metering for the facade.AdmissionReview and httpext.ResponseWriter using metering.Summary
+func (s *Server) startMetering(tgt metering.Summary, review facade.AdmissionReview, wr httpext.ResponseWriter) func() {
 	kind := review.Request().Kind()
 	decoratedFn := tgt.StartMetering(prometheus.Labels{
 		labelAdmissionReviewVersion: review.Version(),
@@ -122,7 +122,7 @@ func (s *Server) startMetering(tgt metering.Summary, review facade.AdmissionRevi
 		labelObjNamespace: review.Request().Namespace(),
 	})
 	return func() {
-		status := writer.Status()
+		status := wr.Status()
 		// Handle client errors
 		if status >= http.StatusBadRequest && status < http.StatusInternalServerError {
 			decoratedFn(prometheus.Labels{labelResult: string(facade.AdmissionClientError)})

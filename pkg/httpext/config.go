@@ -53,9 +53,9 @@ func NewDefaultConfig() Config {
 			PrivateKeyFile: "/etc/ssl/private/tls.key",
 			PublicKeyFile:  "/etc/ssl/private/tls.crt",
 		},
-		ReadTimeout:    10 * time.Second,
-		WriteTimeout:   10 * time.Second,
-		MaxHeaderBytes: 10 << 10,
+		ReadTimeout:    10 * time.Second, // nolint:gomnd
+		WriteTimeout:   10 * time.Second, // nolint:gomnd
+		MaxHeaderBytes: 10 << 10,         // nolint:gomnd
 	}
 }
 

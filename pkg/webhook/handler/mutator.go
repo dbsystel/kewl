@@ -24,7 +24,8 @@ func (m *mutatorImpl) HandlerType() Type {
 
 func (m *mutatorImpl) HandleReview(logger logr.Logger, review facade.AdmissionReview) error {
 	request := review.Request()
-	logger.Info("mutation hook start", "resource", request.Resource())
+	loggerV1 := logger.V(1)
+	loggerV1.Info("mutation hook start", "resource", request.Resource())
 	if err := m.unmarshaller.HandleReview(logger, review); err != nil {
 		return errors.Wrap(err, "unable to handle request object")
 	}
@@ -48,7 +49,7 @@ func (m *mutatorImpl) HandleReview(logger logr.Logger, review facade.AdmissionRe
 		review.Response().PatchJSON(patchBytes)
 	}
 
-	logger.Info("mutation hook complete", "resource", request.Resource())
+	loggerV1.Info("mutation hook complete", "resource", request.Resource())
 	return nil
 }
 

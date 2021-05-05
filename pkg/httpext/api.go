@@ -103,7 +103,9 @@ func NewServer(logger logr.Logger, config *Config) (*Server, error) {
 		Server:   decorated,
 		ServeMux: mux,
 		logger:   logger,
-		Metrics:  &metricsRegistryImpl{MetricsRegistry: metering.NewRegistry(promRegistry), namespace: config.ServerNamespace},
+		Metrics: &metricsRegistryImpl{
+			MetricsRegistry: metering.NewRegistry(promRegistry), namespace: config.ServerNamespace,
+		},
 		listenFn: listenFn,
 	}, nil
 }
