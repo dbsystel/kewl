@@ -17,15 +17,17 @@ type Summary interface {
 
 // MetricsRegistry is a facade for registering metrics
 type MetricsRegistry interface {
-	// Summary gets or creates and registers a new Summary
+	// PromRegistry returns the prometheus registry
+	PromRegistry() *prometheus.Registry
+	// NewSummary gets or creates and registers a new Summary
 	NewSummary(alias string, promOpts *prometheus.SummaryOpts, labelNames ...string) Summary
 	// WithAlias returns the Summary with the provided alias
 	WithAlias(alias string) Summary
-	// GetOrCreate tries to get a metering.Summary by the provided alias, or create it using the parameters
+	// WithAliasOrCreate tries to get a metering.Summary by the provided alias, or create it using the parameters
 	WithAliasOrCreate(alias string, promOpts *prometheus.SummaryOpts, labelNames ...string) Summary
 }
 
 // NewRegistry creates a new MetricsRegistry backed by a new prometheus.Registry
 func NewRegistry(registry *prometheus.Registry) MetricsRegistry {
-	return &prometheusRegistryFacade{Registry: registry}
+	return &promRegistryFacade{Registry: registry}
 }
