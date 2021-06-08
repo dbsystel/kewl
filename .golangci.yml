@@ -121,6 +121,10 @@ issues:
       linters:
         - lll
         - funlen
+    - path: testing
+      linters:
+        - gomnd
+        - revive
 run:
   timeout: 3m
   # skip generated files

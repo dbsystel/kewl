@@ -21,7 +21,7 @@ func (v *V1Beta1AdmissionReview) MustMarshal() []byte {
 	return json_test.MarshalJSONOrPanic((*v1beta1.AdmissionReview)(v))
 }
 
-//nolint:dupl
+// nolint:dupl
 func NewV1Beta1Review(obj, oldObj testing.Reviewable) func() *V1Beta1AdmissionReview {
 	rawExt, oldRawExt := rawExts(obj, oldObj)
 	return func() *V1Beta1AdmissionReview {
