@@ -3,7 +3,7 @@ package httpext_test
 import (
 	"github.com/dbsystel/kewl/pkg/httpext"
 	"github.com/dbsystel/kewl/pkg/panicutils"
-	"github.com/go-logr/logr/testing"
+	"github.com/go-logr/logr"
 )
 
 // Fixture is a fixture for testing httpext.Server
@@ -34,7 +34,7 @@ func newFixture(enableHTTPS bool) *Fixture {
 		config.TLSConfig.PublicKeyFile = pemFilePair.PublicKeyPath()
 		config.TLSConfig.PrivateKeyFile = pemFilePair.PrivateKeyPath()
 	}
-	server, err := httpext.NewServer(testing.NullLogger{}, config)
+	server, err := httpext.NewServer(logr.DiscardLogger{}, config)
 	panicutils.PanicIfError(err)
 	return &Fixture{Sut: server, Test: &TestFacade{ServeMux: server.ServeMux}}
 }
