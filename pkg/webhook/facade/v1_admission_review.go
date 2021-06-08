@@ -1,3 +1,4 @@
+// nolint:dupl
 package facade
 
 import (
@@ -20,7 +21,8 @@ func v1AdmissionReviewFromBytes(bytes []byte) (AdmissionReview, error) {
 }
 
 type v1AdmissionReview struct {
-	target *v1.AdmissionReview
+	target  *v1.AdmissionReview
+	request *v1AdmissionReviewRequest
 }
 
 // Review decorator functions
@@ -31,37 +33,52 @@ func (v *v1AdmissionReview) Marshal() ([]byte, error) {
 }
 
 func (v *v1AdmissionReview) Request() AdmissionRequest {
-	return v
+	if v.request == nil && v.target.Request != nil {
+		v.request = &v1AdmissionReviewRequest{target: v.target.Request}
+	}
+	return v.request
 }
 
 func (v *v1AdmissionReview) Response() AdmissionResponse {
 	return v
 }
 
-func (v *v1AdmissionReview) Kind() metav1.GroupVersionKind {
-	return v.target.Request.Kind
+func (v *v1AdmissionReview) Version() string {
+	return v1.SchemeGroupVersion.Version
+}
+
+func (v *v1AdmissionReview) ClearRequest() {
+	v.target.Request = nil
 }
 
 // Request decorator functions
-var _ AdmissionRequest = &v1AdmissionReview{}
+var _ AdmissionRequest = &v1AdmissionReviewRequest{}
 
-func (v *v1AdmissionReview) Namespace() string {
-	return v.target.Request.Namespace
+type v1AdmissionReviewRequest struct {
+	target *v1.AdmissionRequest
 }
 
-func (v *v1AdmissionReview) Object() *runtime.RawExtension {
-	return &v.target.Request.Object
+func (v *v1AdmissionReviewRequest) Namespace() string {
+	return v.target.Namespace
 }
 
-func (v *v1AdmissionReview) OldObject() *runtime.RawExtension {
-	return &v.target.Request.OldObject
+func (v *v1AdmissionReviewRequest) Kind() metav1.GroupVersionKind {
+	return v.target.Kind
 }
 
-func (v *v1AdmissionReview) Resource() metav1.GroupVersionResource {
-	return v.target.Request.Resource
+func (v *v1AdmissionReviewRequest) Object() *runtime.RawExtension {
+	return &v.target.Object
 }
 
-func (v v1AdmissionReview) Version() string {
+func (v *v1AdmissionReviewRequest) OldObject() *runtime.RawExtension {
+	return &v.target.OldObject
+}
+
+func (v *v1AdmissionReviewRequest) Resource() metav1.GroupVersionResource {
+	return v.target.Resource
+}
+
+func (v v1AdmissionReviewRequest) Version() string {
 	return v1.SchemeGroupVersion.Version
 }
 
@@ -96,6 +113,10 @@ func (v *v1AdmissionReview) PatchJSON(bytes []byte) {
 			response.Patch = bytes
 		}
 	})
+}
+
+func (v *v1AdmissionReview) IsSet() bool {
+	return v.target.Response != nil
 }
 
 func (v *v1AdmissionReview) ResponseType() ResponseType {

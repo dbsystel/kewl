@@ -26,8 +26,8 @@ func (v *validatorImpl) HandlerType() Type {
 
 func (v *validatorImpl) HandleReview(logger logr.Logger, review facade.AdmissionReview) error {
 	request := review.Request()
-	loggerV1 := logger.V(1)
-	loggerV1.Info("validation hook start", "resource", request.Resource())
+	verboseLogger := logger.V(1)
+	verboseLogger.Info("validation hook start", "resource", request.Resource())
 	if err := v.unmarshaller.HandleReview(logger, review); err != nil {
 		return errors.Wrap(err, "unable to handle request object")
 	}
@@ -46,13 +46,15 @@ func (v *validatorImpl) HandleReview(logger logr.Logger, review facade.Admission
 	}
 	// Handle valid status
 	if len(failures) == 0 {
+		verboseLogger.Info("validation hook allowed the request", "resource", request.Resource())
 		review.Response().Allow()
 		return nil
 	}
 	// Convert the fail into a status
 	status := v.convertFailuresToStatus(object, failures)
+	logger.Info("validation hook denied the request", "resource", request.Resource())
 	review.Response().Deny(status)
-	loggerV1.Info("validation hook complete", "resource", request.Resource())
+	verboseLogger.Info("validation hook complete", "resource", request.Resource())
 	return nil
 }
 

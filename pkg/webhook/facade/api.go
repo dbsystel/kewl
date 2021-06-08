@@ -14,10 +14,15 @@ import (
 type ResponseType string
 
 const (
-	AdmissionAllowed     ResponseType = "allowed"
-	AdmissionDenied      ResponseType = "denied"
-	AdmissionMutated     ResponseType = "mutated"
-	AdmissionError       ResponseType = "error"
+	// AdmissionAllowed denotes an allowed admission
+	AdmissionAllowed ResponseType = "allowed"
+	// AdmissionDenied denotes a denied admission
+	AdmissionDenied ResponseType = "denied"
+	// AdmissionMutated denotes a mutated admission
+	AdmissionMutated ResponseType = "mutated"
+	// AdmissionError denotes an erroneous
+	AdmissionError ResponseType = "error"
+	// AdmissionClientError denotes an error in the request
 	AdmissionClientError ResponseType = "client_error"
 )
 
@@ -33,6 +38,8 @@ type AdmissionResponse interface {
 	PatchJSON(bytes []byte)
 	// ResponseType returns the ResponseType for statistics
 	ResponseType() ResponseType
+	// IsSet returns true if the response is set
+	IsSet() bool
 }
 
 // AdmissionRequest facades the AdmissionReview request
@@ -41,7 +48,7 @@ type AdmissionRequest interface {
 	Kind() metav1.GroupVersionKind
 	// Object returns the runtime.RawExtension representing the request object
 	Object() *runtime.RawExtension
-	// Object returns the runtime.RawExtension representing the request old object
+	// OldObject returns the runtime.RawExtension representing the request old object
 	OldObject() *runtime.RawExtension
 	// Resource returns the metav1.GroupVersionResource for the request object
 	Resource() metav1.GroupVersionResource
@@ -51,6 +58,8 @@ type AdmissionRequest interface {
 
 // AdmissionReview is a facade for the admission review (to deal with the type-safety of different versions)
 type AdmissionReview interface {
+	// ClearRequest clears the request
+	ClearRequest()
 	// Request returns the request
 	Request() AdmissionRequest
 	// Response returns the response
@@ -83,10 +92,10 @@ func AdmissionReviewFrom(bytes []byte) (AdmissionReview, error) {
 
 // V1 creates an admission review for v1
 func V1(target *v1.AdmissionReview) AdmissionReview {
-	return &v1AdmissionReview{target}
+	return &v1AdmissionReview{target: target}
 }
 
 // V1Beta1 creates an admission review for v1beta1
 func V1Beta1(target *v1beta1.AdmissionReview) AdmissionReview {
-	return &v1beta1AdmissionReview{target}
+	return &v1beta1AdmissionReview{target: target}
 }

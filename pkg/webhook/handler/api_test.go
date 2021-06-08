@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/go-logr/logr"
+
 	"github.com/dbsystel/kewl/pkg/panicutils"
 	"github.com/dbsystel/kewl/testing/admission_test"
 
 	"github.com/dbsystel/kewl/pkg/webhook/facade"
 	"github.com/dbsystel/kewl/pkg/webhook/handler"
-	logtesting "github.com/go-logr/logr/testing"
 	admission "k8s.io/api/admission/v1"
 
 	. "github.com/onsi/ginkgo"
@@ -18,7 +19,7 @@ import (
 
 func InvokeHandler(admRevHandler handler.AdmissionReview, review *admission_test.V1AdmissionReview) error {
 	facadeV1 := facade.V1((*admission.AdmissionReview)(review))
-	if err := admRevHandler.HandleReview(&logtesting.NullLogger{}, facadeV1); err != nil {
+	if err := admRevHandler.HandleReview(&logr.DiscardLogger{}, facadeV1); err != nil {
 		return err
 	}
 	bytes, err := facadeV1.Marshal()

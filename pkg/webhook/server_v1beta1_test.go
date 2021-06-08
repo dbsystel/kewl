@@ -40,7 +40,8 @@ var _ = Describe("Server v1beta1 test", func() {
 	admRevVer := "v1beta1"
 	Context("validation", func() {
 		It("should handle valid objects correctly", func() {
-			response := fixture.Test.ValidateV1Beta1(admission_test.V1Beta1ValidPod())
+			req, response := fixture.Test.ValidateV1Beta1(admission_test.V1Beta1ValidPod())
+			Expect(req).To(BeNil())
 			Expect(response).NotTo(BeNil())
 			Expect(response.Allowed).To(BeTrue())
 			Expect(response.Patch).To(BeNil())
@@ -50,7 +51,8 @@ var _ = Describe("Server v1beta1 test", func() {
 			Expect(*metrics.SampleSum).To(BeNumerically(">", 0))
 		})
 		It("should handle invalid objects correctly", func() {
-			response := fixture.Test.ValidateV1Beta1(admission_test.V1Beta1InvalidPod())
+			req, response := fixture.Test.ValidateV1Beta1(admission_test.V1Beta1InvalidPod())
+			Expect(req).To(BeNil())
 			Expect(response).NotTo(BeNil())
 			Expect(response.Allowed).To(BeFalse())
 			Expect(response.Patch).To(BeNil())
@@ -60,14 +62,14 @@ var _ = Describe("Server v1beta1 test", func() {
 			Expect(*metrics.SampleSum).To(BeNumerically(">", 0))
 		})
 		It("should handle errors correctly", func() {
-			response := fixture.Test.ValidateV1Beta1(admission_test.V1Beta1ErrorPod())
+			_, response := fixture.Test.ValidateV1Beta1(admission_test.V1Beta1ErrorPod())
 			Expect(response).To(BeNil())
 			metrics := validationMetrics(admRevVer, corev1_test.ErrorPod, facade.AdmissionError)
 			Expect(*metrics.SampleCount).To(BeNumerically("==", 1))
 			Expect(*metrics.SampleSum).To(BeNumerically(">", 0))
 		})
 		It("should skip unknown objects", func() {
-			response := fixture.Test.ValidateV1Beta1(admission_test.V1Beta1BadPod())
+			_, response := fixture.Test.ValidateV1Beta1(admission_test.V1Beta1BadPod())
 			Expect(response).NotTo(BeNil())
 			Expect(response.Allowed).To(BeTrue())
 			metrics := mutationMetrics(admRevVer, corev1_test.BadPod, facade.AdmissionAllowed)
@@ -77,7 +79,8 @@ var _ = Describe("Server v1beta1 test", func() {
 	})
 	Context("mutation", func() {
 		It("should not respond with patches if unchanged", func() {
-			response := fixture.Test.MutateV1Beta1(admission_test.V1Beta1ValidPod())
+			req, response := fixture.Test.MutateV1Beta1(admission_test.V1Beta1ValidPod())
+			Expect(req).To(BeNil())
 			Expect(response).NotTo(BeNil())
 			Expect(response.Allowed).To(BeTrue())
 			Expect(response.Patch).To(BeNil())
@@ -87,7 +90,8 @@ var _ = Describe("Server v1beta1 test", func() {
 			Expect(*metrics.SampleSum).To(BeNumerically(">", 0))
 		})
 		It("should respond with patches if mutated", func() {
-			response := fixture.Test.MutateV1Beta1(admission_test.V1Beta1InvalidPod())
+			req, response := fixture.Test.MutateV1Beta1(admission_test.V1Beta1InvalidPod())
+			Expect(req).To(BeNil())
 			Expect(response).NotTo(BeNil())
 			Expect(response.Allowed).To(BeTrue())
 			Expect(response.Patch).NotTo(BeNil())
@@ -97,14 +101,14 @@ var _ = Describe("Server v1beta1 test", func() {
 			Expect(*metrics.SampleSum).To(BeNumerically(">", 0))
 		})
 		It("should handle errors correctly", func() {
-			response := fixture.Test.MutateV1Beta1(admission_test.V1Beta1ErrorPod())
+			_, response := fixture.Test.MutateV1Beta1(admission_test.V1Beta1ErrorPod())
 			Expect(response).To(BeNil())
 			metrics := mutationMetrics(admRevVer, corev1_test.ErrorPod, facade.AdmissionError)
 			Expect(*metrics.SampleCount).To(BeNumerically("==", 1))
 			Expect(*metrics.SampleSum).To(BeNumerically(">", 0))
 		})
 		It("should skip unknown objects", func() {
-			response := fixture.Test.MutateV1Beta1(admission_test.V1Beta1BadPod())
+			_, response := fixture.Test.MutateV1Beta1(admission_test.V1Beta1BadPod())
 			Expect(response).NotTo(BeNil())
 			Expect(response.Allowed).To(BeTrue())
 			metrics := mutationMetrics(admRevVer, corev1_test.BadPod, facade.AdmissionAllowed)

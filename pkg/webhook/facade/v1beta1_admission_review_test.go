@@ -65,5 +65,14 @@ var _ = Describe("v1beta1AdmissionReview test", func() {
 			Expect(result.Response.Patch).NotTo(BeEmpty())
 			Expect(sut.Response().ResponseType()).To(Equal(facade.AdmissionMutated))
 		})
+		It("should clear the request", func() {
+			sut.ClearRequest()
+			Expect(sut.Request()).To(BeNil())
+		})
+		It("should denote if the response is set", func() {
+			Expect(sut.Response().IsSet()).To(BeFalse())
+			sut.Response().Deny(nil)
+			Expect(sut.Response().IsSet()).To(BeTrue())
+		})
 	})
 })

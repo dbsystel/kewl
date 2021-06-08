@@ -31,7 +31,7 @@ depguard:
     min-complexity: 15
   goimports:
     local-prefixes: github.com/golangci/golangci-lint
-  golint:
+  revive:
     min-confidence: 0
   gomnd:
     settings:
@@ -72,7 +72,7 @@ linters:
     - gocyclo
     - gofmt
     - goimports
-    - golint
+    - revive
     - gomnd
     - goprintffuncname
     - gosec

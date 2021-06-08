@@ -61,4 +61,7 @@ var _ = Describe("Mutator test", func() {
 		review := admission_test.V1ErrorPod()
 		Expect(InvokeHandler(sut, review)).To(HaveOccurred())
 	})
+	It("should provide handler type", func() {
+		Expect(sut.HandlerType()).To(Equal(handler.TypeMutation))
+	})
 })

@@ -38,4 +38,7 @@ var _ = Describe("UnmarshalReqObj test", func() {
 		Expect(review.Request.Object.Object).To(BeEquivalentTo(corev1_test.InvalidPod))
 		Expect(review.Request.OldObject.Object).To(BeEquivalentTo(corev1_test.ValidPod))
 	})
+	It("should provide handler type", func() {
+		Expect(sut.HandlerType()).To(Equal(handler.TypeOther))
+	})
 })
