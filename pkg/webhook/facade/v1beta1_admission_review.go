@@ -1,3 +1,4 @@
+// nolint:dupl
 package facade
 
 import (
@@ -9,18 +10,19 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
+var v1beta1PatchTypeJSONPatch = v1beta1.PatchTypeJSONPatch
+
 func v1beta1AdmissionReviewFromBytes(bytes []byte) (AdmissionReview, error) {
 	target := &v1beta1.AdmissionReview{}
 	if err := json.Unmarshal(bytes, target); err != nil {
 		return nil, errors.Wrap(err, "got an admission review v1beta1, but could not serialize it")
 	}
-	return &v1beta1AdmissionReview{target}, nil
+	return V1Beta1(target), nil
 }
 
-var v1beta1PatchTypeJSONPatch = v1beta1.PatchTypeJSONPatch
-
 type v1beta1AdmissionReview struct {
-	target *v1beta1.AdmissionReview
+	target  *v1beta1.AdmissionReview
+	request *v1beta1AdmissionReviewRequest
 }
 
 // Review decorator functions
@@ -31,37 +33,52 @@ func (v *v1beta1AdmissionReview) Marshal() ([]byte, error) {
 }
 
 func (v *v1beta1AdmissionReview) Request() AdmissionRequest {
-	return v
+	if v.request == nil && v.target.Request != nil {
+		v.request = &v1beta1AdmissionReviewRequest{target: v.target.Request}
+	}
+	return v.request
 }
 
 func (v *v1beta1AdmissionReview) Response() AdmissionResponse {
 	return v
 }
 
-func (v *v1beta1AdmissionReview) Kind() metav1.GroupVersionKind {
-	return v.target.Request.Kind
+func (v *v1beta1AdmissionReview) Version() string {
+	return v1beta1.SchemeGroupVersion.Version
+}
+
+func (v *v1beta1AdmissionReview) ClearRequest() {
+	v.target.Request = nil
 }
 
 // Request decorator functions
-var _ AdmissionRequest = &v1beta1AdmissionReview{}
+var _ AdmissionRequest = &v1beta1AdmissionReviewRequest{}
 
-func (v *v1beta1AdmissionReview) Namespace() string {
-	return v.target.Request.Namespace
+type v1beta1AdmissionReviewRequest struct {
+	target *v1beta1.AdmissionRequest
 }
 
-func (v *v1beta1AdmissionReview) Object() *runtime.RawExtension {
-	return &v.target.Request.Object
+func (v *v1beta1AdmissionReviewRequest) Namespace() string {
+	return v.target.Namespace
 }
 
-func (v *v1beta1AdmissionReview) OldObject() *runtime.RawExtension {
-	return &v.target.Request.OldObject
+func (v *v1beta1AdmissionReviewRequest) Kind() metav1.GroupVersionKind {
+	return v.target.Kind
 }
 
-func (v *v1beta1AdmissionReview) Resource() metav1.GroupVersionResource {
-	return v.target.Request.Resource
+func (v *v1beta1AdmissionReviewRequest) Object() *runtime.RawExtension {
+	return &v.target.Object
 }
 
-func (v v1beta1AdmissionReview) Version() string {
+func (v *v1beta1AdmissionReviewRequest) OldObject() *runtime.RawExtension {
+	return &v.target.OldObject
+}
+
+func (v *v1beta1AdmissionReviewRequest) Resource() metav1.GroupVersionResource {
+	return v.target.Resource
+}
+
+func (v v1beta1AdmissionReviewRequest) Version() string {
 	return v1beta1.SchemeGroupVersion.Version
 }
 
@@ -96,6 +113,10 @@ func (v *v1beta1AdmissionReview) PatchJSON(bytes []byte) {
 			response.Patch = bytes
 		}
 	})
+}
+
+func (v *v1beta1AdmissionReview) IsSet() bool {
+	return v.target.Response != nil
 }
 
 func (v *v1beta1AdmissionReview) ResponseType() ResponseType {

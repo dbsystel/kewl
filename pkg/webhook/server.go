@@ -68,6 +68,9 @@ func (s *Server) HandleAdmissionReview(path string, admRevHandler handler.Admiss
 			return
 		}
 
+		// Clear out the request
+		review.ClearRequest()
+
 		// Send the response
 		bytes, err := review.Marshal()
 		if err != nil {
@@ -96,6 +99,12 @@ func (s *Server) readAdmissionReview(writer httpext.ResponseWriter, request *htt
 	// Handle empty bodies
 	if review == nil {
 		writer.SendResponseString(http.StatusUnprocessableEntity, "no content provided")
+		return nil
+	}
+	// Handle empty reviews
+	if review.Request() == nil {
+		writer.SendResponseString(http.StatusUnprocessableEntity, "no request in review provided")
+		return nil
 	}
 	return review
 }

@@ -62,4 +62,7 @@ var _ = Describe("Validator test", func() {
 		Expect(InvokeHandler(sut, review)).To(Not(HaveOccurred()))
 		Expect(review.Response.Allowed).To(BeTrue())
 	})
+	It("should provide handler type", func() {
+		Expect(sut.HandlerType()).To(Equal(handler.TypeValidation))
+	})
 })
