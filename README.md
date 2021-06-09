@@ -19,11 +19,7 @@ for [Dynamic Admission Control](https://kubernetes.io/docs/reference/access-auth
 
 ## Usage
 
-Add the following line to your ``go.mod`` file and you're all setup:
-
-```
-github.com/dbsystel/kewl v1.0.0
-```
+Issue a `go get github.com/dbsystel/kewl` adding KEWL to your go module.
 
 ### Examples
 
