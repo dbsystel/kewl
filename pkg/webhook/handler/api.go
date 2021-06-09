@@ -25,7 +25,7 @@ const (
 type AdmissionReview interface {
 	// HandleReview handles the facade.AdmissionReview using the logr.Logger
 	HandleReview(logger logr.Logger, review facade.AdmissionReview) error
-	// Type returns the Type to identify the web hook
+	// HandlerType returns the Type to identify the web hook
 	HandlerType() Type
 }
 

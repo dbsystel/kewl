@@ -9,6 +9,7 @@ import (
 	. "github.com/onsi/gomega"
 	"k8s.io/api/admission/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 )
 
 var _ = Describe("v1beta1AdmissionReview test", func() {
@@ -35,7 +36,11 @@ var _ = Describe("v1beta1AdmissionReview test", func() {
 		Expect(sut.Request().Kind()).To(BeEquivalentTo(expected.Kind))
 		Expect(sut.Request().Object()).To(BeEquivalentTo(&expected.Object))
 		Expect(sut.Request().OldObject()).To(BeEquivalentTo(&expected.OldObject))
-		Expect(sut.Request().Resource()).To(BeEquivalentTo(expected.Resource))
+		Expect(sut.Request().ResourceKind()).To(BeEquivalentTo(expected.Resource))
+		Expect(sut.Request().ResourceID()).To(BeEquivalentTo(types.NamespacedName{
+			Namespace: admission_test.V1ValidPod().Request.Namespace,
+			Name:      admission_test.V1ValidPod().Request.Name,
+		}))
 		Expect(sut.Request().Namespace()).To(BeEquivalentTo(expected.Namespace))
 		Expect(sut.Response().ResponseType()).To(Equal(facade.AdmissionError))
 	})
