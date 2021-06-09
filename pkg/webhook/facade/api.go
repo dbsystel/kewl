@@ -82,10 +82,10 @@ func AdmissionReviewFrom(bytes []byte) (AdmissionReview, error) {
 		return nil, fmt.Errorf("%v - %v: %v", InvalidAdmissionReviewMsg, "invalid object GroupVersionKind", kind)
 	}
 	if kind.Group == v1.SchemeGroupVersion.Group && kind.Version == v1.SchemeGroupVersion.Version {
-		return v1AdmissionReviewFromBytes(bytes)
+		return V1AdmissionReviewFromBytes(bytes)
 	}
 	if kind.Group == v1beta1.SchemeGroupVersion.Group && kind.Version == v1beta1.SchemeGroupVersion.Version {
-		return v1beta1AdmissionReviewFromBytes(bytes)
+		return V1beta1AdmissionReviewFromBytes(bytes)
 	}
 	return nil, fmt.Errorf("could not create facade for: %v", kind)
 }

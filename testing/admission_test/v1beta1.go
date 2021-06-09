@@ -6,6 +6,7 @@ import (
 	"github.com/dbsystel/kewl/testing/json_test"
 	"k8s.io/api/admission/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/uuid"
 )
 
 // V1Beta1TypeMeta is the metav1.TypeMeta for v1beta1.AdmissionReview
@@ -29,6 +30,7 @@ func NewV1Beta1Review(obj, oldObj testing.Reviewable) func() *V1Beta1AdmissionRe
 		return &V1Beta1AdmissionReview{
 			TypeMeta: V1Beta1TypeMeta,
 			Request: &v1beta1.AdmissionRequest{
+				UID:  uuid.NewUUID(),
 				Kind: metav1.GroupVersionKind{Group: kind.Group, Version: kind.Version, Kind: kind.Kind},
 				Resource: metav1.GroupVersionResource{
 					Group:    kind.Group,
