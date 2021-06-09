@@ -4,6 +4,8 @@ package facade
 import (
 	"encoding/json"
 
+	"k8s.io/apimachinery/pkg/types"
+
 	"github.com/pkg/errors"
 	v1 "k8s.io/api/admission/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -58,6 +60,10 @@ type v1AdmissionReviewRequest struct {
 	target *v1.AdmissionRequest
 }
 
+func (v *v1AdmissionReviewRequest) ResourceID() types.NamespacedName {
+	return types.NamespacedName{Namespace: v.target.Namespace, Name: v.target.Name}
+}
+
 func (v *v1AdmissionReviewRequest) Namespace() string {
 	return v.target.Namespace
 }
@@ -74,7 +80,7 @@ func (v *v1AdmissionReviewRequest) OldObject() *runtime.RawExtension {
 	return &v.target.OldObject
 }
 
-func (v *v1AdmissionReviewRequest) Resource() metav1.GroupVersionResource {
+func (v *v1AdmissionReviewRequest) ResourceKind() metav1.GroupVersionResource {
 	return v.target.Resource
 }
 

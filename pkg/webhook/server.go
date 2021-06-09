@@ -53,8 +53,11 @@ func (s *Server) AddMutator(mutators ...mutation.Mutator) error {
 func (s *Server) HandleAdmissionReview(path string, admRevHandler handler.AdmissionReview, summary metering.Summary) {
 	// Add a handler function
 	s.HandleExt(path, func(writer httpext.ResponseWriter, request *httpext.Request) {
+		logger := request.Logger().V(1).WithValues("path", path, "handler", admRevHandler.HandlerType())
+		logger.Info("reading admission review")
 		review := s.readAdmissionReview(writer, request)
 		if review == nil {
+			logger.Info("no review provided")
 			return
 		}
 
@@ -62,20 +65,25 @@ func (s *Server) HandleAdmissionReview(path string, admRevHandler handler.Admiss
 		finishMetering := s.startMetering(summary, review, writer)
 		defer finishMetering()
 
+		logger.Info("handling review")
 		// Delegate the review to the admRevHandler
 		if err := admRevHandler.HandleReview(request.Logger(), review); err != nil {
 			writer.HandleInternalError(errors.Wrap(err, "review handler failed"))
 			return
 		}
 
+		logger.Info("removing request part of review and sending response")
+
 		// Clear out the request
 		review.ClearRequest()
-
 		// Send the response
 		bytes, err := review.Marshal()
 		if err != nil {
+			logger.Error(err, "response could not be marshalled")
 			writer.HandleInternalError(errors.Wrap(err, "response review cannot be marshaled"))
+			return
 		}
+		logger.Info("sending response", "size", len(bytes))
 		writer.SendJSONBytes(http.StatusOK, bytes)
 	})
 }

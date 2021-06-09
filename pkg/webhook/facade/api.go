@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"reflect"
 
+	"k8s.io/apimachinery/pkg/types"
+
 	v1 "k8s.io/api/admission/v1"
 	"k8s.io/api/admission/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -50,8 +52,10 @@ type AdmissionRequest interface {
 	Object() *runtime.RawExtension
 	// OldObject returns the runtime.RawExtension representing the request old object
 	OldObject() *runtime.RawExtension
-	// Resource returns the metav1.GroupVersionResource for the request object
-	Resource() metav1.GroupVersionResource
+	// ResourceKind returns the metav1.GroupVersionResource for the request object
+	ResourceKind() metav1.GroupVersionResource
+	// ResourceId returns the namespaced name of the requested resource
+	ResourceID() types.NamespacedName
 	// Namespace returns the name of the namespace which is source to this request
 	Namespace() string
 }
