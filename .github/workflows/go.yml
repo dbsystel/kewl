@@ -26,7 +26,9 @@ jobs:
       with:
         version: v1.40
         only-new-issues: true
-        
+        skip-go-installation: true
+        skip-pkg-cache: true
+
     - name: Build
       run: go build -v ./pkg/...
 
