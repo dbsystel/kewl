@@ -2,8 +2,9 @@ package codec_test
 
 import (
 	"encoding/json"
-	admissionv1 "k8s.io/api/admission/v1"
 	"reflect"
+
+	admissionv1 "k8s.io/api/admission/v1"
 
 	"github.com/dbsystel/kewl/pkg/panicutils"
 

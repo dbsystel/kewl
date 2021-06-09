@@ -32,7 +32,7 @@ func NewV1Review(obj, oldObj testing.Reviewable) func() *V1AdmissionReview {
 		return &V1AdmissionReview{
 			TypeMeta: V1TypeMeta,
 			Request: &v1.AdmissionRequest{
-				UID: uuid.NewUUID(),
+				UID:  uuid.NewUUID(),
 				Kind: metav1.GroupVersionKind{Group: kind.Group, Version: kind.Version, Kind: kind.Kind},
 				Resource: metav1.GroupVersionResource{
 					Group:    kind.Group,
