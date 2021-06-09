@@ -2,7 +2,6 @@
 package facade_test
 
 import (
-	"github.com/dbsystel/kewl/pkg/panicutils"
 	"github.com/dbsystel/kewl/pkg/webhook/facade"
 	"github.com/dbsystel/kewl/testing/admission_test"
 	"github.com/dbsystel/kewl/testing/validation_test"
@@ -13,15 +12,24 @@ import (
 )
 
 var _ = Describe("v1AdmissionReview test", func() {
+	var review *admission_test.V1AdmissionReview
 	var sut facade.AdmissionReview
 	BeforeEach(func() {
-		review, err := facade.AdmissionReviewFrom(admission_test.V1ValidPod().MustMarshal())
-		panicutils.PanicIfError(err)
-		sut = review
+		review = admission_test.V1ValidPod()
+		var err error
+		sut, err = facade.AdmissionReviewFrom(review.MustMarshal())
+		Expect(err).NotTo(HaveOccurred())
 	})
 	v1AdmissionReview := func() *v1.AdmissionReview {
 		return K8sAdmissionReview(sut, &v1.AdmissionReview{}).(*v1.AdmissionReview)
 	}
+	It("should return decode err", func() {
+		_, err := facade.V1AdmissionReviewFromBytes([]byte("bla"))
+		Expect(err).To(HaveOccurred())
+	})
+	It("should return the version correctly", func() {
+		Expect(sut.Version()).To(Equal(v1.SchemeGroupVersion.Version))
+	})
 	It("should facade the request correctly", func() {
 		expected := admission_test.V1ValidPod().Request
 		Expect(sut.Request().Kind()).To(BeEquivalentTo(expected.Kind))
@@ -36,6 +44,7 @@ var _ = Describe("v1AdmissionReview test", func() {
 			sut.Response().Allow()
 			result := v1AdmissionReview()
 			Expect(result.Response).NotTo(BeNil())
+			Expect(result.Response.UID).To(Equal(review.Request.UID))
 			Expect(result.Response.Allowed).To(BeTrue())
 			Expect(sut.Response().ResponseType()).To(Equal(facade.AdmissionAllowed))
 		})
@@ -52,6 +61,7 @@ var _ = Describe("v1AdmissionReview test", func() {
 			sut.Response().Deny(status)
 			result := v1AdmissionReview()
 			Expect(result.Response).NotTo(BeNil())
+			Expect(result.Response.UID).To(Equal(review.Request.UID))
 			Expect(result.Response.Allowed).To(BeFalse())
 			Expect(result.Response.Result).To(BeEquivalentTo(status))
 			Expect(sut.Response().ResponseType()).To(Equal(facade.AdmissionDenied))
@@ -60,6 +70,7 @@ var _ = Describe("v1AdmissionReview test", func() {
 			sut.Response().PatchJSON([]byte("{}"))
 			result := v1AdmissionReview()
 			Expect(result.Response).NotTo(BeNil())
+			Expect(result.Response.UID).To(Equal(review.Request.UID))
 			Expect(result.Response.Allowed).To(BeTrue())
 			Expect(result.Response.PatchType).NotTo(BeNil())
 			Expect(result.Response.Patch).NotTo(BeEmpty())
@@ -73,6 +84,12 @@ var _ = Describe("v1AdmissionReview test", func() {
 			Expect(sut.Response().IsSet()).To(BeFalse())
 			sut.Response().Deny(nil)
 			Expect(sut.Response().IsSet()).To(BeTrue())
+		})
+		It("should not handle response if request is nil", func() {
+			Expect(sut.Response().IsSet()).To(BeFalse())
+			sut.ClearRequest()
+			sut.Response().Allow()
+			Expect(sut.Response().IsSet()).To(BeFalse())
 		})
 	})
 })

@@ -7,6 +7,7 @@ import (
 	v1 "k8s.io/api/admission/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/util/uuid"
 )
 
 // V1TypeMeta is the metav1.TypeMeta for v1.AdmissionReview
@@ -31,6 +32,7 @@ func NewV1Review(obj, oldObj testing.Reviewable) func() *V1AdmissionReview {
 		return &V1AdmissionReview{
 			TypeMeta: V1TypeMeta,
 			Request: &v1.AdmissionRequest{
+				UID: uuid.NewUUID(),
 				Kind: metav1.GroupVersionKind{Group: kind.Group, Version: kind.Version, Kind: kind.Kind},
 				Resource: metav1.GroupVersionResource{
 					Group:    kind.Group,

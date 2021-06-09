@@ -12,7 +12,7 @@ import (
 
 var v1PatchTypeJSONPatch = v1.PatchTypeJSONPatch
 
-func v1AdmissionReviewFromBytes(bytes []byte) (AdmissionReview, error) {
+func V1AdmissionReviewFromBytes(bytes []byte) (AdmissionReview, error) {
 	target := &v1.AdmissionReview{}
 	if err := json.Unmarshal(bytes, target); err != nil {
 		return nil, errors.Wrap(err, "got an admission review v1, but could not serialize it")
@@ -78,16 +78,15 @@ func (v *v1AdmissionReviewRequest) Resource() metav1.GroupVersionResource {
 	return v.target.Resource
 }
 
-func (v v1AdmissionReviewRequest) Version() string {
-	return v1.SchemeGroupVersion.Version
-}
-
 // Response decorator functions
 var _ AdmissionResponse = &v1AdmissionReview{}
 
 func (v *v1AdmissionReview) withResponse(handler func(response *v1.AdmissionResponse)) {
 	if v.target.Response == nil {
-		v.target.Response = &v1.AdmissionResponse{}
+		if v.target.Request == nil {
+			return
+		}
+		v.target.Response = &v1.AdmissionResponse{UID: v.target.Request.UID}
 	}
 	handler(v.target.Response)
 }

@@ -2,6 +2,7 @@ package codec_test
 
 import (
 	"encoding/json"
+	admissionv1 "k8s.io/api/admission/v1"
 	"reflect"
 
 	"github.com/dbsystel/kewl/pkg/panicutils"
@@ -38,23 +39,28 @@ var _ = Describe("Deserializer", func() {
 	BeforeEach(func() {
 		sut = codec.NewDeserializer(runtime.NewScheme())
 	})
-	It("should throw an error if object is unknown", func() {
+	It("should return an error if object is unknown", func() {
 		deserialize, err := sut.Deserialize(schema.GroupVersionKind{Group: "meh", Version: "meh", Kind: "meh"}, nil)
 		Expect(deserialize).To(BeNil())
 		Expect(err).To(HaveOccurred())
 	})
-	It("should throw an error if the object is known, but cannot be deserialized", func() {
+	It("should return an error if the object is known, but cannot be deserialized", func() {
 		Expect(sut.Register(&corev1Extension{})).To(Not(HaveOccurred()))
 		deserialize, err := sut.Deserialize(gvk(corev1.SchemeGroupVersion, corev1.Pod{}), []byte("meh"))
 		Expect(deserialize).To(BeNil())
 		Expect(err).To(HaveOccurred())
 	})
-	It("should throw an error when the scheme extension is nil", func() {
+	It("should return an error when the scheme extension is nil", func() {
 		Expect(sut.Register(nil)).To(HaveOccurred())
 	})
 	It("should deserialize an object correctly", func() {
 		Expect(sut.Register(&corev1Extension{})).To(Not(HaveOccurred()))
 		Expect(sut.Deserialize(gvk(corev1.SchemeGroupVersion, corev1.Pod{}), marshalJSON(&corev1.Pod{}))).Should(Not(BeNil()))
+	})
+	It("should return an error in case an invalid object was provided", func() {
+		Expect(sut.Register(&corev1Extension{})).To(Not(HaveOccurred()))
+		_, err := sut.Deserialize(gvk(corev1.SchemeGroupVersion, admissionv1.AdmissionReview{}), marshalJSON(&corev1.Pod{}))
+		Expect(err).To(HaveOccurred())
 	})
 	It("should propagate not registered correctly", func() {
 		Expect(sut.Register(&corev1Extension{})).To(Not(HaveOccurred()))
