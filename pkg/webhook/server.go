@@ -53,7 +53,7 @@ func (s *Server) AddMutator(mutators ...mutation.Mutator) error {
 func (s *Server) HandleAdmissionReview(path string, admRevHandler handler.AdmissionReview, summary metering.Summary) {
 	// Add a handler function
 	s.HandleExt(path, func(writer httpext.ResponseWriter, request *httpext.Request) {
-		logger := request.Logger().V(1).WithValues("path", path, "handler", admRevHandler.HandlerType())
+		logger := request.Logger().WithValues("path", path, "handler", admRevHandler.HandlerType()).V(1)
 		logger.Info("reading admission review")
 		review := s.readAdmissionReview(writer, request)
 		if review == nil {
