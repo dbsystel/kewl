@@ -25,7 +25,7 @@ func (m *mutatorImpl) HandlerType() Type {
 func (m *mutatorImpl) HandleReview(logger logr.Logger, review facade.AdmissionReview) error {
 	request := review.Request()
 
-	verboseLogger := logger.V(1).WithValues("kind", request.ResourceKind(), "id", request.ResourceID())
+	verboseLogger := logger.WithValues("kind", request.ResourceKind(), "id", request.ResourceID()).V(1)
 	verboseLogger.Info("mutation hook start")
 	if err := m.unmarshaller.HandleReview(logger, review); err != nil {
 		return errors.Wrap(err, "unable to handle request object")
