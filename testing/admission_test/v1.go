@@ -69,5 +69,8 @@ var V1ValidPod = NewV1Review(corev1_test.ValidPod, corev1_test.InvalidPod)
 // V1InvalidPod is the v1.AdmissionReview for corev1_test.InvalidPod
 var V1InvalidPod = NewV1Review(corev1_test.InvalidPod, corev1_test.ValidPod)
 
+// V1DetachedPod is the v1.AdmissionReview for corev1_test.DetachedPod
+var V1DetachedPod = NewV1Review(corev1_test.DetachedPod, corev1_test.DetachedPod)
+
 // V1BadPod is the v1.AdmissionReview for corev1_test.BadPod containing an unknown object
 var V1BadPod = NewV1Review(corev1_test.BadPod, nil)

@@ -56,5 +56,8 @@ var V1Beta1ValidPod = NewV1Beta1Review(corev1_test.ValidPod, nil)
 // V1Beta1InvalidPod is the v1beta1.AdmissionReview for corev1_test.InvalidPod
 var V1Beta1InvalidPod = NewV1Beta1Review(corev1_test.InvalidPod, corev1_test.ValidPod)
 
+// V1Beta1DetachedPod is the v1beta1.AdmissionReview for corev1_test.DetachedPod
+var V1Beta1DetachedPod = NewV1Beta1Review(corev1_test.DetachedPod, corev1_test.DetachedPod)
+
 // V1Beta1BadPod is the v1.AdmissionReview for corev1_test.BadPod
 var V1Beta1BadPod = NewV1Beta1Review(corev1_test.BadPod, nil)
