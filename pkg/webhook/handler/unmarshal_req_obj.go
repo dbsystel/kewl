@@ -53,7 +53,16 @@ func (u *unmarshalReqObjImpl) deserializeRawExtension(gvk schema.GroupVersionKin
 }
 
 func (u *unmarshalReqObjImpl) ensureNamespaceSet(obj runtime.Object, namespace string) {
-	if metaAcc, ok := obj.(v1.ObjectMetaAccessor); ok && metaAcc.GetObjectMeta() != nil && len(metaAcc.GetObjectMeta().GetNamespace()) == 0 {
-		metaAcc.GetObjectMeta().SetNamespace(namespace)
+	metaAcc, ok := obj.(v1.ObjectMetaAccessor)
+	if !ok {
+		return
 	}
+	objMeta := metaAcc.GetObjectMeta()
+	if objMeta == nil {
+		return
+	}
+	if len(objMeta.GetNamespace()) > 0 {
+		return
+	}
+	objMeta.SetNamespace(namespace)
 }
