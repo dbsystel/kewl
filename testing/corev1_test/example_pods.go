@@ -59,17 +59,24 @@ func NewBrokenPod(name string) *Pod {
 	}, ObjectMeta: metav1.ObjectMeta{Name: name, Namespace: Namespace}}
 }
 
+func NewDetachedPod(name string) *Pod {
+	return &Pod{TypeMeta: PodTypeMeta, ObjectMeta: metav1.ObjectMeta{Name: name}}
+}
+
 // ErrorPod is a pod which should create an error on handling
 var ErrorPod = NewPod("error")
 
 // PanicPod is a pod which should create a panic on handling
 var PanicPod = NewPod("panic")
 
-// ValidPod which is considered valid on handling
+// ValidPod is a pod which is considered valid on handling
 var ValidPod = NewPod("valid")
 
-// InvalidPod which is considered invalid on handling
+// InvalidPod is a pod which is considered invalid on handling
 var InvalidPod = NewPod("invalid")
+
+// DetachedPod is a pod which is not attached to a namespace
+var DetachedPod = NewDetachedPod("detached")
 
 // BadPod is a pod which does not serialize correctly
 var BadPod = NewBrokenPod("broken")

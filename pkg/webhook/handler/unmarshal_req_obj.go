@@ -5,6 +5,7 @@ import (
 	"github.com/dbsystel/kewl/pkg/webhook/facade"
 	"github.com/go-logr/logr"
 	"github.com/pkg/errors"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
@@ -34,6 +35,8 @@ func (u *unmarshalReqObjImpl) HandleReview(_ logr.Logger, review facade.Admissio
 	if err := u.deserializeRawExtension(schemaKind, request.OldObject()); err != nil {
 		return errors.Wrapf(err, "could not deserialize request old object: %v", kind)
 	}
+	u.ensureNamespaceSet(review.Request().Object().Object, review.Request().Namespace())
+	u.ensureNamespaceSet(review.Request().OldObject().Object, review.Request().Namespace())
 	return nil
 }
 
@@ -47,4 +50,11 @@ func (u *unmarshalReqObjImpl) deserializeRawExtension(gvk schema.GroupVersionKin
 	}
 	ext.Object = deserialized
 	return nil
+}
+
+func (u *unmarshalReqObjImpl) ensureNamespaceSet(obj runtime.Object, namespace string) {
+	if metaAcc, ok := obj.(v1.ObjectMetaAccessor);
+		ok && metaAcc.GetObjectMeta() != nil && len(metaAcc.GetObjectMeta().GetNamespace()) == 0 {
+		metaAcc.GetObjectMeta().SetNamespace(namespace)
+	}
 }

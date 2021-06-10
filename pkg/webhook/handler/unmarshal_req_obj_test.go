@@ -38,6 +38,15 @@ var _ = Describe("UnmarshalReqObj test", func() {
 		Expect(review.Request.Object.Object).To(BeEquivalentTo(corev1_test.InvalidPod))
 		Expect(review.Request.OldObject.Object).To(BeEquivalentTo(corev1_test.ValidPod))
 	})
+	It("should set namespace from review", func() {
+		review := admission_test.V1DetachedPod()
+		review.Request.Namespace = "blubb"
+		Expect(InvokeHandler(sut, review)).To(Not(HaveOccurred()))
+		Expect(review.Request.Object.Object).To(BeAssignableToTypeOf(&corev1.Pod{}))
+		Expect(review.Request.Object.Object.(*corev1.Pod).Namespace).To(Equal(review.Request.Namespace))
+		Expect(review.Request.OldObject.Object).To(BeAssignableToTypeOf(&corev1.Pod{}))
+		Expect(review.Request.OldObject.Object.(*corev1.Pod).Namespace).To(Equal(review.Request.Namespace))
+	})
 	It("should provide handler type", func() {
 		Expect(sut.HandlerType()).To(Equal(handler.TypeOther))
 	})
