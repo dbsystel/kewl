@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cat
+spec:
+  containers:
+    - name: cat
