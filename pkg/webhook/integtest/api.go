@@ -1,11 +1,12 @@
 package integtest
 
 import (
+	"reflect"
+
 	"github.com/dbsystel/kewl/pkg/mutation"
 	"github.com/dbsystel/kewl/pkg/validation"
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/runtime"
-	"reflect"
 )
 
 // Interface is the interface for an integration test fixture
