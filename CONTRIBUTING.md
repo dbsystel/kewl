@@ -12,7 +12,7 @@ We would kindly ask you to not decrease the code coverage, so please write/adapt
 
 ## Communication
 
-We do not tolerate violent/racist/sexist or any other behavior aiming to harm anyone, so please behave like a grown-up and respect each other. Thank you.
+We do not tolerate violent/racist/sexist or any other behavior aiming to harm anyone, so please respect each other as human beings. Thank you.
 
 ## Linting
 
